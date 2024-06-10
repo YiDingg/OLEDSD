@@ -64,35 +64,35 @@ uint8_t OLED_Init_CMD[29] =
 
 /* void OLED_Init_IT(void)
 {
-	OLED_WR_Byte(0xAE,OLED_CMD,1);	// 熄灭屏幕
-	OLED_WR_Byte(0xB0,OLED_CMD,1);	// 设置页地址
-	OLED_WR_Byte(0x00,OLED_CMD,1);	// 设置低列地址--set low column address
-	OLED_WR_Byte(0x10,OLED_CMD,1);	// 设置高列地址--set high column address
-	OLED_WR_Byte(0x40,OLED_CMD,1);	// 从RAM中哪一行起读取显示内容--set start line address Set Mapping RAM Display Start Line (0x00~0x3F)
+	OLED_WR_Byte(0xAE,OLED_CMD);	// 熄灭屏幕
+	OLED_WR_Byte(0xB0,OLED_CMD);	// 设置页地址
+	OLED_WR_Byte(0x00,OLED_CMD);	// 设置低列地址--set low column address
+	OLED_WR_Byte(0x10,OLED_CMD);	// 设置高列地址--set high column address
+	OLED_WR_Byte(0x40,OLED_CMD);	// 从RAM中哪一行起读取显示内容--set start line address Set Mapping RAM Display Start Line (0x00~0x3F)
 	
-	OLED_WR_Byte(0x81,OLED_CMD,1);	// 进入contrast control register设置--set contrast control register
-	OLED_WR_Byte(0xCF,OLED_CMD,1);	// 设置亮度0x00~0xff(0x00时自动熄灭屏幕, 需重新点亮)--Set SEG Output Current Brightness
-	OLED_WR_Byte(0xA1,OLED_CMD,1);	// 设置屏幕左右翻转,0xa1正常,0xa0左右反置--Set SEG/Column Mapping     
-	OLED_WR_Byte(0xC8,OLED_CMD,1);	// 设置屏幕上下翻转,0xc8正常,0xc0上下反置--Set COM/Row Scan Direction,    
-	OLED_WR_Byte(0xA6,OLED_CMD,1);	// 设置显示模式,0xA6正常显示,0xA7反相显示--set normal display
-	OLED_WR_Byte(0xA8,OLED_CMD,1);	// --set multiplex ratio(1 to 64)
-	OLED_WR_Byte(0x3f,OLED_CMD,1);	// --1/64 duty
+	OLED_WR_Byte(0x81,OLED_CMD);	// 进入contrast control register设置--set contrast control register
+	OLED_WR_Byte(0xCF,OLED_CMD);	// 设置亮度0x00~0xff(0x00时自动熄灭屏幕, 需重新点亮)--Set SEG Output Current Brightness
+	OLED_WR_Byte(0xA1,OLED_CMD);	// 设置屏幕左右翻转,0xa1正常,0xa0左右反置--Set SEG/Column Mapping     
+	OLED_WR_Byte(0xC8,OLED_CMD);	// 设置屏幕上下翻转,0xc8正常,0xc0上下反置--Set COM/Row Scan Direction,    
+	OLED_WR_Byte(0xA6,OLED_CMD);	// 设置显示模式,0xA6正常显示,0xA7反相显示--set normal display
+	OLED_WR_Byte(0xA8,OLED_CMD);	// --set multiplex ratio(1 to 64)
+	OLED_WR_Byte(0x3f,OLED_CMD);	// --1/64 duty
 	
-	OLED_WR_Byte(0xD3,OLED_CMD,1);	// 进入偏移量设置--set display offset	Shift Mapping RAM Counter (0x00~0x3F)
-	OLED_WR_Byte(0x00,OLED_CMD,1);	// 设置无偏移--not offset
-	OLED_WR_Byte(0xD5,OLED_CMD,1);	// 设置时钟分频因子,震荡频率--set display clock divide ratio/oscillator frequency
-	OLED_WR_Byte(0x80,OLED_CMD,1);	// bit[3:0],分频因子;bit[7:4],震荡频率--set divide ratio, Set Clock as 100 Frames/Sec
-	OLED_WR_Byte(0xD9,OLED_CMD,1);	// --set pre-charge period
-	OLED_WR_Byte(0xF1,OLED_CMD,1);	// Set Pre-Charge as 15 Clocks & Discharge as 1 Clock
-	OLED_WR_Byte(0xDA,OLED_CMD,1);	// --set com pins hardware configuration
-	OLED_WR_Byte(0x12,OLED_CMD,1);	
-	OLED_WR_Byte(0xDB,OLED_CMD,1);	// --set vcomh
-	OLED_WR_Byte(0x30,OLED_CMD,1);	// Set VCOM Deselect Level
-	OLED_WR_Byte(0x20,OLED_CMD,1);	// 设置寻址模式	//-Set Page Addressing Mode (0x00/0x01/0x02)
-	OLED_WR_Byte(0x02,OLED_CMD,1);	// 页寻址模式
-	OLED_WR_Byte(0x8D,OLED_CMD,1);	// 进入电荷泵设置--set Charge Pump enable/disable
-	OLED_WR_Byte(0x14,OLED_CMD,1);	// 0x14开启,0x10关闭--0x14 enable,0x10 disable
-	OLED_WR_Byte(0xAF,OLED_CMD,1);	// 0xAF点亮屏幕,0xAE熄灭屏幕
+	OLED_WR_Byte(0xD3,OLED_CMD);	// 进入偏移量设置--set display offset	Shift Mapping RAM Counter (0x00~0x3F)
+	OLED_WR_Byte(0x00,OLED_CMD);	// 设置无偏移--not offset
+	OLED_WR_Byte(0xD5,OLED_CMD);	// 设置时钟分频因子,震荡频率--set display clock divide ratio/oscillator frequency
+	OLED_WR_Byte(0x80,OLED_CMD);	// bit[3:0],分频因子;bit[7:4],震荡频率--set divide ratio, Set Clock as 100 Frames/Sec
+	OLED_WR_Byte(0xD9,OLED_CMD);	// --set pre-charge period
+	OLED_WR_Byte(0xF1,OLED_CMD);	// Set Pre-Charge as 15 Clocks & Discharge as 1 Clock
+	OLED_WR_Byte(0xDA,OLED_CMD);	// --set com pins hardware configuration
+	OLED_WR_Byte(0x12,OLED_CMD);	
+	OLED_WR_Byte(0xDB,OLED_CMD);	// --set vcomh
+	OLED_WR_Byte(0x30,OLED_CMD);	// Set VCOM Deselect Level
+	OLED_WR_Byte(0x20,OLED_CMD);	// 设置寻址模式	//-Set Page Addressing Mode (0x00/0x01/0x02)
+	OLED_WR_Byte(0x02,OLED_CMD);	// 页寻址模式
+	OLED_WR_Byte(0x8D,OLED_CMD);	// 进入电荷泵设置--set Charge Pump enable/disable
+	OLED_WR_Byte(0x14,OLED_CMD);	// 0x14开启,0x10关闭--0x14 enable,0x10 disable
+	OLED_WR_Byte(0xAF,OLED_CMD);	// 0xAF点亮屏幕,0xAE熄灭屏幕
 	OLED_Buffer_clear();
 }
 */
@@ -103,9 +103,9 @@ uint8_t OLED_Init_CMD[29] =
  * @param mode 0写命令, 1写数据
  * @retval void
 */
-void OLED_WR_Byte(u8 mode,u8 dat, u8 datasize){
-	if(mode){HAL_I2C_Mem_Write(&I2CtoOLED, 0x78,0x40,I2C_MEMADD_SIZE_8BIT,&dat,datasize,0x100);}	// 写数据
- 	else{HAL_I2C_Mem_Write(&I2CtoOLED, 0x78,0x00,I2C_MEMADD_SIZE_8BIT,&dat,datasize,0x100);}		// 写命令, master函数也是这个
+void OLED_WR_Byte(u8 mode,u8 dat){
+	if(mode){HAL_I2C_Mem_Write(&I2CtoOLED, 0x78,0x40,I2C_MEMADD_SIZE_8BIT,&dat,1,0x100);}	// 写数据
+ 	else{HAL_I2C_Mem_Write(&I2CtoOLED, 0x78,0x00,I2C_MEMADD_SIZE_8BIT,&dat,1,0x100);}		// 写命令, master函数也是这个
 }
 
 /**
@@ -115,10 +115,10 @@ void OLED_WR_Byte(u8 mode,u8 dat, u8 datasize){
  * @param wait 1-CPU等待数据传输完成, 0-CPU不等待 
  * @retval void
 */
-void OLED_WR_Byte_DMA(u8 isdata,u8 dat, u8 datasize, u8 wait)
+void OLED_WR_Byte_DMA(u8 isdata,u8 dat, u8 wait)
 {
-    if(isdata){HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78,0x40,I2C_MEMADD_SIZE_8BIT,&dat,datasize);}		// 写数据
-    else{HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78,0x00,I2C_MEMADD_SIZE_8BIT,&dat,datasize);}			// 写命令, master函数也是这个
+    if(isdata){HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78,0x40,I2C_MEMADD_SIZE_8BIT,&dat,1);}		// 写数据
+    else{HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78,0x00,I2C_MEMADD_SIZE_8BIT,&dat,1);}			// 写命令, master函数也是这个
 	if(wait){while (I2CtoOLED.State != HAL_I2C_STATE_READY );}	// CPU等待数据传输
 }
 
@@ -221,9 +221,9 @@ void OLED_delay(u32 time){
 */
 void OLED_ColorTurn(u8 i)
 {
-	OLED_WR_Byte(0x81,OLED_CMD,1);
-	if(i==0){OLED_WR_Byte(0xA6,OLED_CMD,1);}	// 正常显示
-	if(i==1){OLED_WR_Byte(0xA7,OLED_CMD,1);}	// 反色显示
+	OLED_WR_Byte(0x81,OLED_CMD);
+	if(i==0){OLED_WR_Byte(0xA6,OLED_CMD);}	// 正常显示
+	if(i==1){OLED_WR_Byte(0xA7,OLED_CMD);}	// 反色显示
 }
 
 /**
@@ -235,13 +235,13 @@ void OLED_DisplayTurn(u8 i)
 {
 	if(i==0)
 		{
-			OLED_WR_Byte(0xC8,OLED_CMD,1);//正常显示
-			OLED_WR_Byte(0xA1,OLED_CMD,1);
+			OLED_WR_Byte(0xC8,OLED_CMD);//正常显示
+			OLED_WR_Byte(0xA1,OLED_CMD);
 		}
 	if(i==1)
 		{
-			OLED_WR_Byte(0xC0,OLED_CMD,1);//反转显示
-			OLED_WR_Byte(0xA0,OLED_CMD,1);
+			OLED_WR_Byte(0xC0,OLED_CMD);//反转显示
+			OLED_WR_Byte(0xA0,OLED_CMD);
 		}
 }
 
@@ -251,9 +251,9 @@ void OLED_DisplayTurn(u8 i)
 */
 void OLED_DisPlay_On(void)
 {
-	OLED_WR_Byte(0x8D,OLED_CMD,1);//电荷泵使能
-	OLED_WR_Byte(0x14,OLED_CMD,1);//开启电荷泵
-	OLED_WR_Byte(0xAF,OLED_CMD,1);//点亮屏幕
+	OLED_WR_Byte(0x8D,OLED_CMD);//电荷泵使能
+	OLED_WR_Byte(0x14,OLED_CMD);//开启电荷泵
+	OLED_WR_Byte(0xAF,OLED_CMD);//点亮屏幕
 }
 
 /**
@@ -262,9 +262,9 @@ void OLED_DisPlay_On(void)
 */
 void OLED_DisPlay_Off(void)
 {
-	OLED_WR_Byte(0x8D,OLED_CMD,1);//电荷泵使能
-	OLED_WR_Byte(0x10,OLED_CMD,1);//关闭电荷泵
-	OLED_WR_Byte(0xAE,OLED_CMD,1);//关闭屏幕
+	OLED_WR_Byte(0x8D,OLED_CMD);//电荷泵使能
+	OLED_WR_Byte(0x10,OLED_CMD);//关闭电荷泵
+	OLED_WR_Byte(0xAE,OLED_CMD);//关闭屏幕
 }
 
 /**
@@ -280,15 +280,17 @@ void OLED_Buffer_clear(void){
  * @brief 作一个像素点
  * @param x 横坐标(从左往右)
  * @param y 纵坐标(从上往下)
+ * @param mode 1亮0暗
  * @retval void
 */
-void OLED_DrawPoint(u8 x,u8 y,u8 t)
+void OLED_DrawPoint(u8 x,u8 y,u8 mode)
 {
+	if(x>=OLED_Width||y>=OLED_Height){return;}
 	u8 i,m,n;
 	i=y/8;
 	m=y%8;
 	n=1<<m;
-	if(t){OLED_GRAMBuf[i][x]|=n;}
+	if(mode){OLED_GRAMBuf[i][x]|=n;}
 	else
 	{
 		OLED_GRAMBuf[i][x]=~OLED_GRAMBuf[i][x];
@@ -375,11 +377,61 @@ void OLED_DrawCircle(u8 x,u8 y,u8 r)
 }
 
 /**
+ * @brief 绘制一个椭圆
+ * @param x 椭圆中心横坐标
+ * @param y 椭圆中心纵坐标
+ * @param a 椭圆长轴(包括边界点)
+ * @param b 椭圆短轴(包括边界点)
+ * @param mode 1亮0暗, 椭圆边界颜色,
+ */
+void OLED_DrawEllipse(uint8_t x, uint8_t y, uint8_t a, uint8_t b, uint8_t mode){
+  int xpos = 0, ypos = b;
+  int a2 = a * a, b2 = b * b;
+  int d = b2 + a2 * (0.25 - b);
+  while (a2 * ypos > b2 * xpos)
+  {
+    OLED_DrawPoint(x + xpos, y + ypos, mode);
+    OLED_DrawPoint(x - xpos, y + ypos, mode);
+    OLED_DrawPoint(x + xpos, y - ypos, mode);
+    OLED_DrawPoint(x - xpos, y - ypos, mode);
+    if (d < 0)
+    {
+      d = d + b2 * ((xpos << 1) + 3);
+      xpos += 1;
+    }
+    else
+    {
+      d = d + b2 * ((xpos << 1) + 3) + a2 * (-(ypos << 1) + 2);
+      xpos += 1, ypos -= 1;
+    }
+  }
+  d = b2 * (xpos + 0.5) * (xpos + 0.5) + a2 * (ypos - 1) * (ypos - 1) - a2 * b2;
+  while (ypos > 0)
+  {
+    OLED_DrawPoint(x + xpos, y + ypos, mode);
+    OLED_DrawPoint(x - xpos, y + ypos, mode);
+    OLED_DrawPoint(x + xpos, y - ypos, mode);
+    OLED_DrawPoint(x - xpos, y - ypos, mode);
+    if (d < 0)
+    {
+      d = d + b2 * ((xpos << 1) + 2) + a2 * (-(ypos << 1) + 3);
+      xpos += 1, ypos -= 1;
+    }
+    else
+    {
+      d = d + a2 * (-(ypos << 1) + 3);
+      ypos -= 1;
+    }
+  }
+}
+
+
+/**
  * @brief 作一个矩形
  * @param x	起始横坐标(边框左上角)
  * @param y 起始纵坐标(边框左上角)
- * @param width (边框)宽
- * @param height (边框)高
+ * @param width 宽(算上边框的两像素)
+ * @param height 高(算上边框的两像素)
  * @param frame 外部边框, 1亮0暗
  * @param inside 内部填充, 1亮0暗 
  * @retval void
@@ -556,8 +608,8 @@ void OLED_ShowNum_bin(u8 x,u8 y,u32 num,u8 len,u8 size1,u8 mode){
  * @param y 纵坐标
  * @param num 要显示的数字
  * @param len 显示位数(左侧自动补零)
- * @param size 字号, {8,12,16,24}依次对应{08*06,12*06,16*08,24*12}
- * @param mode 反色: 1正常;0反色;
+ * @param size 字号{8,12,16,24}
+ * @param mode 1正常;0反色;
  * @retval void
 */
 void OLED_ShowNum_dec(u8 x,u8 y,u32 num,u8 len,u8 size1,u8 mode)
@@ -680,41 +732,40 @@ void OLED_ShowChinese(u8 x,u8 y,u8 num,u8 size1,u8 mode)
  * @brief Show one picture
  * @param x (起始)横坐标
  * @param y (起始)纵坐标
- * @note 起始坐标位于字符/图片的左上角
- * @param sizex 图片横宽 
+ * @param sizex 图片横宽
  * @param sizey 图片纵高 
  * @param BMP 图片对应数组名 
  * @param mode 1正常, 0反色显示 
+ * @note  起始坐标位于字符/图片的左上角
  * @retval void
 */
 void OLED_ShowPicture(u8 x,u8 y,u8 sizex,u8 sizey,const u8 BMP[],u8 mode)
 {
-	u16 j=0;
-	u8 i,n,temp,m;
-	u8 x0=x,y0=y;
-	sizey=sizey/8+((sizey%8)?1:0);
-	for(n=0;n<sizey;n++)
-	{
-		 for(i=0;i<sizex;i++)
-		 {
-				temp=BMP[j];
-				j++;
-				for(m=0;m<8;m++)
-				{
-					if(temp&0x01)OLED_DrawPoint(x,y,mode);
-					else OLED_DrawPoint(x,y,!mode);
-					temp>>=1;
-					y++;
+	uint8_t i,j,k,temp,page;
+	uint8_t x0=x, y0=y;
+	page=sizey/8+((sizey%8)?1:0); // 计算页数
+	for(i=0;i<page;i++){
+		for(j=0;j<sizex;j++){
+			temp=BMP[i*sizex+j];
+			for(k=0;k<8;k++){
+				if(i*8+k>=sizey){break;}
+				OLED_DrawPoint(x0+j,y0+i*8+k,mode*((temp>>k)&0x01));
 				}
-				x++;
-				if((x-x0)==sizex)
-				{
-					x=x0;
-					y0=y0+8;
-				}
-				y=y0;
-     }
-	 }
+		}
+	}
+}
+
+/**
+ * @brief Show one picture by using Structure
+ * @param x (起始)横坐标
+ * @param y (起始)纵坐标
+ * @param Image  图片对应结构体 
+ * @param mode 1正常, 0反色显示 
+ * @note  起始坐标位于字符/图片的左上角
+ * @retval void
+*/
+void OLED_ShowPic_Structure(u8 x,u8 y, Image Pic_Structure,u8 mode){
+	OLED_ShowPicture(x,y,Pic_Structure.width,Pic_Structure.height,Pic_Structure.picture,mode);
 }
 
 /**
@@ -772,15 +823,15 @@ void OLED_ScrollDisplay(u8 num,u8 space,u8 mode)
  * @retval void
 */
 void OLED_Scroll_InsiderHorizental_Enable(uint8_t start_page,uint8_t end_page,Roll_Frame frame,uint8_t mode){
-	OLED_WR_Byte(0x2E,OLED_CMD,1);	// 必须先关闭滚动
-	OLED_WR_Byte(mode ? 0x26 : 0x27,OLED_CMD,1);	// 1向右滚动，0向左滚动
-	OLED_WR_Byte(0x00,OLED_CMD,1);	// 发送一个虚拟字节
-	OLED_WR_Byte(start_page & 0x07,OLED_CMD,1);	//起始页 0
-	OLED_WR_Byte(frame & 0x07,OLED_CMD,1);	//滚动时间间隔
-	OLED_WR_Byte(end_page & 0x07,OLED_CMD,1);	//终止页 7
-	OLED_WR_Byte(0x00,OLED_CMD,1);	// 发送虚拟字节
-	OLED_WR_Byte(0xFF,OLED_CMD,1);	// 发送虚拟字节
-	OLED_WR_Byte(0x2F,OLED_CMD,1);   //开启滚动
+	OLED_WR_Byte(0x2E,OLED_CMD);	// 必须先关闭滚动
+	OLED_WR_Byte(mode ? 0x26 : 0x27,OLED_CMD);	// 1向右滚动，0向左滚动
+	OLED_WR_Byte(0x00,OLED_CMD);	// 发送一个虚拟字节
+	OLED_WR_Byte(start_page & 0x07,OLED_CMD);	//起始页 0
+	OLED_WR_Byte(frame & 0x07,OLED_CMD);	//滚动时间间隔
+	OLED_WR_Byte(end_page & 0x07,OLED_CMD);	//终止页 7
+	OLED_WR_Byte(0x00,OLED_CMD);	// 发送虚拟字节
+	OLED_WR_Byte(0xFF,OLED_CMD);	// 发送虚拟字节
+	OLED_WR_Byte(0x2F,OLED_CMD);   //开启滚动
 }
 
 /**
@@ -788,7 +839,7 @@ void OLED_Scroll_InsiderHorizental_Enable(uint8_t start_page,uint8_t end_page,Ro
  * @retval void
 */
 void OLED_Scroll_InsiderHorizental_disable(void){	
-	OLED_WR_Byte(0x2E,OLED_CMD,1);	// 关闭滚动
+	OLED_WR_Byte(0x2E,OLED_CMD);	// 关闭滚动
 }
 
 uint8_t my_strlen(uint8_t* str)
@@ -807,5 +858,5 @@ void OLED_Init(void)
 {
 	OLED_Buffer_clear();
 	HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78, 0x00, I2C_MEMADD_SIZE_8BIT, OLED_Init_CMD, 29);
-	HAL_Delay(1);	// 等待Init数据传输完毕
+	while (I2CtoOLED.State != HAL_I2C_STATE_READY );	// CPU等待数据传输
 }
