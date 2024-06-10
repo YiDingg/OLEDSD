@@ -3,8 +3,8 @@
  * 0.96寸128x64屏幕，SSD1306控制芯片，IIC通信协议，4管脚
 */
 
-#ifndef __OLED_H
-#define __OLED_H 
+#ifndef __OLED_H_
+#define __OLED_H_ 
 
 #include "main.h"
 #include "stdlib.h"	
@@ -44,10 +44,11 @@ void OLED_Clear_quick(void);
 void OLED_DrawPoint(u8 x,u8 y,u8 t);
 void OLED_DrawLine(u8 x1,u8 y1,u8 x2,u8 y2,u8 mode);
 void OLED_DrawCircle(u8 x,u8 y,u8 r);
+void OLED_DrawRectangle(u8 x,u8 y,u8 width,u8 height,u8 frame,u8 inside);
 void OLED_ShowChar(u8 x,u8 y,u8 chr,u8 size1,u8 mode);
 void OLED_ShowString(u8 x,u8 y,u8 *chr,u8 size1,u8 mode);
 void OLED_ShowString_rowcentering(u8 y,u8 *chr,u8 size1,u8 mode);
-u32  OLED_Pow(u8 m,u8 n);
+u32  OLED_Pow(u8 m,u8 n); 
 void OLED_ShowNum_bin(u8 x,u8 y,u32 num,u8 len,u8 size1,u8 mode);
 void OLED_ShowNum_dec(u8 x,u8 y,u32 num,u8 len,u8 size1,u8 mode);
 void OLED_ShowNum_hex(u8 x,u8 y,u32 num,u8 len,u8 size1,u8 mode);
@@ -62,4 +63,3 @@ void OLED_Scroll_LongCN_Enable(uint16_t x,uint8_t y,uint8_t *str,uint8_t mode); 
 void OLED_Init(void);
 
 #endif
-

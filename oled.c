@@ -236,7 +236,7 @@ void OLED_DrawLine(u8 x1,u8 y1,u8 x2,u8 y2,u8 mode)
 	else {incy=-1;delta_y=-delta_x;}
 	if(delta_x>delta_y)distance=delta_x; //选取基本增量坐标轴 
 	else distance=delta_y;
-	for(t=0;t<distance+1;t++)
+	for(t=0;t<distance+2;t++)
 	{
 		OLED_DrawPoint(uRow,uCol,mode); //画点
 		xerr+=delta_x;
@@ -277,7 +277,6 @@ void OLED_DrawCircle(u8 x,u8 y,u8 r)
         OLED_DrawPoint(x + b, y - a,1);
         OLED_DrawPoint(x - b, y - a,1);
         OLED_DrawPoint(x - b, y + a,1);
-        
         a++;
         num = (a * a + b * b) - r*r;//计算画的点离圆心的距离
         if(num > 0)
@@ -288,7 +287,27 @@ void OLED_DrawCircle(u8 x,u8 y,u8 r)
     }
 }
 
-
+/**
+ * @brief 作一个矩形
+ * @param x	起始横坐标(边框左上角)
+ * @param y 起始纵坐标(边框左上角)
+ * @param width (边框)宽
+ * @param height (边框)高
+ * @param frame 外部边框, 1亮0暗
+ * @param inside 内部填充, 1亮0暗 
+ * @retval void
+*/
+void OLED_DrawRectangle(u8 x,u8 y,u8 width,u8 height,u8 frame,u8 inside){
+	uint8_t i;
+	// 作边框
+	OLED_DrawLine(x,y,x+width-1,y,frame);
+	OLED_DrawLine(x,y,x,y+height-1,frame);
+	OLED_DrawLine(x+width-1,y,x+width-1,y+height-1,frame);
+	OLED_DrawLine(x,y+height-1,x+width-1,y+height-1,frame);
+	i = 0;
+	// 作填充(for比while更快)
+	for ( i = 1; i < width-1; i++){OLED_DrawLine(x+i,y+1,x+i,y+height-2,inside);}
+}
 
 /**
  * @brief 显示字符串
@@ -301,30 +320,54 @@ void OLED_DrawCircle(u8 x,u8 y,u8 r)
 */
 void OLED_ShowChar(u8 x,u8 y,u8 chr,u8 size1,u8 mode)
 {
-	u8 i,m,temp,size2,chr1;
+	u8 i,m,temp;
 	u8 x0=x,y0=y;
-	if(size1==8)size2=6;
-	else size2=(size1/8+((size1%8)?1:0))*(size1/2);  //得到字体一个字符对应点阵集所占的字节数
-	chr1=chr-' ';  //计算偏移后的值
-	for(i=0;i<size2;i++)
-	{
-		if(size1==8){temp=asc2_0806[chr1][i];} //调用0806字体
-		else if(size1==12){temp=asc2_1206[chr1][i];} //调用1206字体
-		else if(size1==16){temp=asc2_1608[chr1][i];} //调用1608字体
-		else if(size1==24){temp=asc2_2412[chr1][i];} //调用2412字体
-		else return;
-		for(m=0;m<8;m++)
-		{
-			if(temp&0x01)OLED_DrawPoint(x,y,mode);
-			else OLED_DrawPoint(x,y,!mode);
-			temp>>=1;
-			y++;
+	const u8* TEMP; 
+	u16 size2 = (size1==8)?6:((size1/2)*(size1/8+((size1%8)?1:0)));		//得到字体一个字符对应点阵集所占的字节数
+	switch (size1){
+		case 8: TEMP=asc2_0806[chr-' '];break;
+		case 12: TEMP=asc2_1206[chr-' '];break;
+		case 16: TEMP=asc2_1608[chr-' '];break;
+		case 24: TEMP=asc2_2412[chr-' '];break;
+		default: return;
+	}
+	if(size1==12){	// 避免12*16时侵占其它空间
+		for(i=0;i<6;i++){
+			temp = *(TEMP+i);
+			for(m=0;m<8;m++){
+				if(temp&(0x01<<m)){OLED_DrawPoint(x,y,mode);}
+				else{OLED_DrawPoint(x,y,!mode);}
+				y++;
+			}
+			x++;
+			y=y0;
 		}
-		x++;
-		if((size1!=8)&&((x-x0)==size1/2))
-		{x=x0;y0=y0+8;}
-		y=y0;
-  }
+		x=x0;y0=y0+8;y=y0; // 换下一页
+		for(i=0;i<6;i++){
+			temp = *(TEMP+i+6);
+			for(m=0;m<4;m++){
+				if(temp&(0x01<<m)){OLED_DrawPoint(x,y,mode);}
+				else{OLED_DrawPoint(x,y,!mode);}
+				y++;
+			}
+			x++;
+			y=y0;
+		}
+	}
+	else{
+		for(i=0;i<size2;i++){
+			temp = *(TEMP+i);
+			for(m=0;m<8;m++)
+			{
+				if(temp&(0x01<<m)){OLED_DrawPoint(x,y,mode);}
+				else{OLED_DrawPoint(x,y,!mode);}
+				y++;
+			}
+			x++;
+			y=y0;
+			if((size1!=8)&&((x-x0)==size1/2)){x=x0;y0=y0+8;y=y0;}
+		}
+	}
 }
 
 
@@ -519,20 +562,18 @@ void OLED_ShowNum_signeddec(u8 x,u8 y,int32_t num,u8 len,u8 size1,u8 mode){
 */
 void OLED_ShowChinese(u8 x,u8 y,u8 num,u8 size1,u8 mode)
 {
-	u8 m,temp;
+	u8 i,m,temp;
 	u8 x0=x,y0=y;
 	const u8* TEMP; 
-	u16 i,size3=size1*(size1/8 + ((size1%8)?1:0));  //得到字体一个字符对应点阵集所占的字节数
-	switch (size1)
-	{
-	case 12: TEMP = *(Chinese_12+num);break;
-	case 16: TEMP = *(Chinese_16+num);break;
-	case 24: TEMP = *(Chinese_24+num);break;
-	case 32: TEMP = *(Chinese_32+num);break;
-	default: return;	// 非法参数直接return
+	u16 size3=size1*(size1/8 + ((size1%8)?1:0));  //得到字体一个字符对应点阵集所占的字节数
+	switch (size1){
+		case 12: TEMP = *(Chinese_12+num);break;
+		case 16: TEMP = *(Chinese_16+num);break;
+		case 24: TEMP = *(Chinese_24+num);break;
+		case 32: TEMP = *(Chinese_32+num);break;
+		default: return;	// 非法参数直接return
 	}
-	for(i=0;i<size3;i++)
-	{
+	for(i=0;i<size3;i++){
 		temp = *(TEMP+i);
 		for(m=0;m<8;m++)
 		{
@@ -768,9 +809,12 @@ void OLED_Scroll_LongCN_Enable(uint16_t x,uint8_t y,uint8_t *str,uint8_t mode)
 void OLED_Init(void)
 {
 	OLED_WR_Byte(0xAE,OLED_CMD);	// 熄灭屏幕
+	OLED_WR_Byte(0xB0,OLED_CMD);	// 设置页地址
+	OLED_WR_Byte(0x00,OLED_CMD);	// 设置低列地址--set low column address
+	OLED_WR_Byte(0x10,OLED_CMD);	// 设置高列地址--set high column address
 	OLED_WR_Byte(0x40,OLED_CMD);	// 从RAM中哪一行起读取显示内容--set start line address Set Mapping RAM Display Start Line (0x00~0x3F)
-	OLED_WR_Byte(0x81,OLED_CMD);	// 设置对比度--set contrast control register
-	OLED_WR_Byte(0xCF,OLED_CMD);	// 设置亮度0x00~0xff--Set SEG Output Current Brightness
+	OLED_WR_Byte(0x81,OLED_CMD);	// 进入contrast control register设置--set contrast control register
+	OLED_WR_Byte(0xCF,OLED_CMD);	// 设置亮度0x00~0xff(0x00时自动熄灭屏幕, 需重新点亮)--Set SEG Output Current Brightness
 	OLED_WR_Byte(0xA1,OLED_CMD);	// 设置屏幕左右翻转,0xa1正常,0xa0左右反置--Set SEG/Column Mapping     
 	OLED_WR_Byte(0xC8,OLED_CMD);	// 设置屏幕上下翻转,0xc8正常,0xc0上下反置--Set COM/Row Scan Direction,    
 	OLED_WR_Byte(0xA6,OLED_CMD);	// 设置显示模式,0xA6正常显示,0xA7反相显示--set normal display
