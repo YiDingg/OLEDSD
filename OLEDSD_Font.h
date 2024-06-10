@@ -1,5 +1,5 @@
-#ifndef __OLEDFONT_H
-#define __OLEDFONT_H
+#if !defined(_OLEDSD_FONT_H_)
+#define _OLEDSD_FONT_H_
 
 // 08*06
 const unsigned char asc2_0806[][6] =
@@ -433,6 +433,6 @@ const unsigned char Chinese_32[][128]={
 /* (32 X 32 , 宋体 )*/
 };
 
-#endif
+#endif // _OLEDSD_FONT_H_
 
 
