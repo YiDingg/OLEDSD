@@ -11,7 +11,7 @@
 
 /* 用户宏定义 */
 #define I2CtoOLED hi2c2 		//	IIC接口
-#define MCU_Frequency_MHz 72	// 单片机频率,生成延时函数用于OLED_Refresh_Mutimode()
+//#define MCU_Frequency_MHz 72	// 单片机频率,生成延时函数用于OLED_Refresh_Mutimode()
 #define OLED_Width 128
 #define OLED_Height 64
 
@@ -22,12 +22,6 @@
 #define u32 uint32_t
 #define OLED_CMD  0	//写命令
 #define OLED_DATA 1	//写数据
-
-typedef enum {
-	Ready,
-	Busy,
-	Finish
-}IIC_STATE;
 
 typedef struct Image {
   uint8_t width;           // 图片宽度
@@ -55,13 +49,9 @@ typedef enum
 
 void OLED_ColorTurn(u8 i);
 void OLED_DisplayTurn(u8 i);
-void OLED_WR_Byte(u8 mode,u8 dat);
-void OLED_WR_Byte_DMA(u8 isdata,u8 dat, u8 wait);
 void OLED_SetCursorBuf(u8 x, u8 y);
 void OLED_DisPlay_On(void);
 void OLED_DisPlay_Off(void);
-void OLED_delay(u32 time);
-void OLED_Refresh(void);
 //void OLED_Refresh_Mutimode(u8 mode, u8 speed);
 void OLED_Buffer_clear(void);
 void OLED_DrawPoint(u8 x,u8 y,u8 mode);
@@ -80,10 +70,16 @@ void OLED_ShowNum_signeddec(u8 x,u8 y,int32_t num,u8 len,u8 size1,u8 mode);
 void OLED_ShowChinese(u8 x,u8 y,u8 num,u8 size1,u8 mode);
 void OLED_ScrollDisplay(u8 num,u8 space,u8 mode);
 void OLED_ShowPicture(u8 x,u8 y,u8 sizex,u8 sizey,const u8 BMP[],u8 mode);
+void OLED_ShowPic_Structure(u8 x,u8 y, Image Pic_Structure,u8 mode);
 void OLED_Scroll_InsiderHorizental_Enable(uint8_t start_page,uint8_t end_page,Roll_Frame frame,uint8_t mode);
 void OLED_Scroll_InsiderHorizental_disable(void);
-uint8_t my_strlen(uint8_t* str);
+uint8_t Get_StrLength(uint8_t* str);
+
+void OLED_WR_Byte(u8 dat,u8 isdata);
+void OLED_WR_Byte_DMA(u8 isdata,u8 dat, u8 wait);
 void OLED_Init(void);
+void OLED_Refresh(void);
+void OLED_Ref_Nowait(void);
 
 #endif
 

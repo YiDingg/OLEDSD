@@ -3,10 +3,8 @@
 */
 
 #include "oled.h"
-#include "stdlib.h"
 #include "oledfont.h"
 #include "i2c.h"
-#include "gpio.h"
 
 /* -------------- 全局变量 -------------- */
 /*                                       */
@@ -22,8 +20,7 @@ u8 OLED_Refresh_CMDBuf[8][3] = {	// 命令数组，用于 refresh 时设置页�
 	{0x00,0xB7,0x10},
 };
 u8 OLED_CursorBuf[4] = {0};
-uint8_t CountFlag = 0; 
-uint8_t BufFinshFlag = 0;
+// uint8_t BufFinshFlag = 0;
 
 // OLED的初始化可以使用数组，也可以一条一条单独发送
 uint8_t OLED_Init_CMD[29] =
@@ -59,6 +56,7 @@ uint8_t OLED_Init_CMD[29] =
 	0x20, 
 	0x00
 };
+
 /*                                       */
 /* -------------- 全局变量 -------------- */
 
@@ -98,14 +96,18 @@ uint8_t OLED_Init_CMD[29] =
 */
 
 /**
- * @brief 用阻塞模式向OLED发送命令或数据
+ * @brief 用默认模式向OLED发送命令或数据
  * @param dat 发送的数据
- * @param mode 0写命令, 1写数据
+ * @param isdata 0写命令, 1写数据
  * @retval void
 */
-void OLED_WR_Byte(u8 mode,u8 dat){
-	if(mode){HAL_I2C_Mem_Write(&I2CtoOLED, 0x78,0x40,I2C_MEMADD_SIZE_8BIT,&dat,1,0x100);}	// 写数据
- 	else{HAL_I2C_Mem_Write(&I2CtoOLED, 0x78,0x00,I2C_MEMADD_SIZE_8BIT,&dat,1,0x100);}		// 写命令, master函数也是这个
+void OLED_WR_Byte(u8 dat,u8 isdata){
+	switch (isdata){
+	case OLED_CMD:	// 写命令
+		HAL_I2C_Mem_Write(&I2CtoOLED, 0x78,0x00,I2C_MEMADD_SIZE_8BIT,&dat,1,0x100);return;
+	case OLED_DATA:	// 写数据
+		HAL_I2C_Mem_Write(&I2CtoOLED, 0x78,0x40,I2C_MEMADD_SIZE_8BIT,&dat,1,0x100);return;
+	default:return;}
 }
 
 /**
@@ -117,25 +119,17 @@ void OLED_WR_Byte(u8 mode,u8 dat){
 */
 void OLED_WR_Byte_DMA(u8 isdata,u8 dat, u8 wait)
 {
-    if(isdata){HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78,0x40,I2C_MEMADD_SIZE_8BIT,&dat,1);}		// 写数据
-    else{HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78,0x00,I2C_MEMADD_SIZE_8BIT,&dat,1);}			// 写命令, master函数也是这个
+	switch (isdata){
+	case OLED_CMD:	// 写命令
+		HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78,0x00,I2C_MEMADD_SIZE_8BIT,&dat,1);break;
+	case OLED_DATA:	// 写数据
+		HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78,0x40,I2C_MEMADD_SIZE_8BIT,&dat,1);break;
+	default:return;}
 	if(wait){while (I2CtoOLED.State != HAL_I2C_STATE_READY );}	// CPU等待数据传输
 }
 
-/** 
-  * @brief  设置光标位置(x,y)
-  * @param x x轴, 从 0 到 127
-  * @param y 页位置, 从 0 到 7
-  * @retval none
-*/
-void OLED_SetCursorBuf(u8 x, u8 y){
-	OLED_CursorBuf[0] = 0x00|(x&0x0F);
-	OLED_CursorBuf[1] = 0xB0|y;
-	OLED_CursorBuf[2] = 0x10|((x&0xF0) >> 4);
-}
-
 /**
- * @brief 将显存更新到OLED屏幕(DMA模式)
+ * @brief 将显存更新到OLED屏幕(DMA模式，等待)，强制等待DMA传输完毕
  * @retval void
 */
 void OLED_Refresh(void)
@@ -150,13 +144,27 @@ void OLED_Refresh(void)
 	}
 }
 
+/**
+ * @brief 将显存更新到OLED屏幕(不等待)
+ * @note 可能产生未定义结果!
+ * @retval void
+*/
+void OLED_Ref_Nowait(void)
+{
+	OLED_Refresh();
+	// 注：暂未解决一次性发送128*8个数据时显示异常的问题，暂时先用OLED_Refresh()
+}
 
-/* 	BufFinshFlag = 1;
-	IIC_state = Busy;
-	HAL_I2C_Master_Transmit_DMA(&I2CtoOLED,0x78,OLED_Refresh_CMDBuf[0],3);
-	IIC_state = Ready;HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_13); */
-
-
+/**
+ * @brief OLED初始化(用DMA模式进行初始化)
+ * @retval void
+*/
+void OLED_Init(void)
+{
+	OLED_Buffer_clear();
+	HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78, 0x00, I2C_MEMADD_SIZE_8BIT, OLED_Init_CMD, 29);
+	while (I2CtoOLED.State != HAL_I2C_STATE_READY );	// CPU等待数据传输
+}
 
 
 /**
@@ -208,10 +216,16 @@ void OLED_Refresh_Mutimode(u8 mode, u8 time){
 }
 */
 
-void OLED_delay(u32 time){
-	u32 i,n;
-	n = time*(MCU_Frequency_MHz-5)*OLED_Pow(10,6);
-	while (i<n){i++;}
+/** 
+  * @brief 将光标位置(x,y)存于CursorBuf中
+  * @param x x轴, 从 0 到 127
+  * @param y 页位置, 从 0 到 7
+  * @retval none
+*/
+void OLED_SetCursorBuf(u8 x, u8 y){
+	OLED_CursorBuf[0] = 0x00|(x&0x0F);
+	OLED_CursorBuf[1] = 0xB0|y;
+	OLED_CursorBuf[2] = 0x10|((x&0xF0) >> 4);
 }
 
 /**
@@ -221,9 +235,12 @@ void OLED_delay(u32 time){
 */
 void OLED_ColorTurn(u8 i)
 {
-	OLED_WR_Byte(0x81,OLED_CMD);
-	if(i==0){OLED_WR_Byte(0xA6,OLED_CMD);}	// 正常显示
-	if(i==1){OLED_WR_Byte(0xA7,OLED_CMD);}	// 反色显示
+	switch (i){
+	case 0:	// 正常显示
+		OLED_WR_Byte(0xA6,OLED_CMD);return;
+	case 1:	// 反色显示
+		OLED_WR_Byte(0xA7,OLED_CMD);return;
+	default:return;}
 }
 
 /**
@@ -233,16 +250,14 @@ void OLED_ColorTurn(u8 i)
 */
 void OLED_DisplayTurn(u8 i)
 {
-	if(i==0)
-		{
-			OLED_WR_Byte(0xC8,OLED_CMD);//正常显示
-			OLED_WR_Byte(0xA1,OLED_CMD);
-		}
-	if(i==1)
-		{
-			OLED_WR_Byte(0xC0,OLED_CMD);//反转显示
-			OLED_WR_Byte(0xA0,OLED_CMD);
-		}
+	switch (i){
+	case 0:	// 正常显示
+		OLED_WR_Byte(0xC8,OLED_CMD);
+		OLED_WR_Byte(0xA1,OLED_CMD);return;
+	case 1:	// 反转显示
+		OLED_WR_Byte(0xC0,OLED_CMD);
+		OLED_WR_Byte(0xA0,OLED_CMD);return;
+	default:return;}
 }
 
 /**
@@ -569,10 +584,7 @@ void OLED_ShowString_rowcentering(u8 y,u8 *chr,u8 size1,u8 mode){
 u32 OLED_Pow(u8 m,u8 n)
 {
 	u32 result=1;
-	while(n--)
-	{
-	  result*=m;
-	}
+	while(n--){result*=m;}
 	return result;
 }
 
@@ -727,7 +739,6 @@ void OLED_ShowChinese(u8 x,u8 y,u8 num,u8 size1,u8 mode)
 }
 
 
- 
 /**
  * @brief Show one picture
  * @param x (起始)横坐标
@@ -739,19 +750,29 @@ void OLED_ShowChinese(u8 x,u8 y,u8 num,u8 size1,u8 mode)
  * @note  起始坐标位于字符/图片的左上角
  * @retval void
 */
-void OLED_ShowPicture(u8 x,u8 y,u8 sizex,u8 sizey,const u8 BMP[],u8 mode)
+void OLED_ShowPicture(uint8_t x,uint8_t y,uint8_t sizex,uint8_t sizey,const uint8_t BMP[],uint8_t mode)
 {
 	uint8_t i,j,k,temp,page;
 	uint8_t x0=x, y0=y;
 	page=sizey/8+((sizey%8)?1:0); // 计算页数
-	for(i=0;i<page;i++){
-		for(j=0;j<sizex;j++){
-			temp=BMP[i*sizex+j];
-			for(k=0;k<8;k++){
-				if(i*8+k>=sizey){break;}
-				OLED_DrawPoint(x0+j,y0+i*8+k,mode*((temp>>k)&0x01));
-				}
-		}
+	switch(mode){
+		case 0:
+			for(i=0;i<page;i++){
+				for(j=0;j<sizex;j++){
+					temp=BMP[i*sizex+j];
+					for(k=0;k<8;k++){
+						if(i*8+k>=sizey){break;}
+						OLED_DrawPoint(x0+j,y0+i*8+k,((temp>>k)&0x01));}}}
+			return;
+		case 1:
+			for(i=0;i<page;i++){
+				for(j=0;j<sizex;j++){
+					temp=BMP[i*sizex+j];
+					for(k=0;k<8;k++){
+						if(i*8+k>=sizey){break;}
+						OLED_DrawPoint(x0+j,y0+i*8+k,!((temp>>k)&0x01));}}}
+			return;
+		default:return;
 	}
 }
 
@@ -842,7 +863,7 @@ void OLED_Scroll_InsiderHorizental_disable(void){
 	OLED_WR_Byte(0x2E,OLED_CMD);	// 关闭滚动
 }
 
-uint8_t my_strlen(uint8_t* str)
+uint8_t Get_StrLength(uint8_t* str)
 {
     uint8_t count = 0; //计数
     while(*str != '\0')
@@ -850,13 +871,3 @@ uint8_t my_strlen(uint8_t* str)
     return count;
 }
 
-/**
- * @brief OLED初始化(用DMA模式进行初始化)
- * @retval void
-*/
-void OLED_Init(void)
-{
-	OLED_Buffer_clear();
-	HAL_I2C_Mem_Write_DMA(&I2CtoOLED, 0x78, 0x00, I2C_MEMADD_SIZE_8BIT, OLED_Init_CMD, 29);
-	while (I2CtoOLED.State != HAL_I2C_STATE_READY );	// CPU等待数据传输
-}
